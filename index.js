@@ -1,6 +1,8 @@
 require('dotenv').config();
 const { TwitterApi } = require('twitter-api-v2');
 
+console.log('HELLO DEPLOYED !!!')
+
 // Twitter API credentials loaded from the .env file
 const client = new TwitterApi({
   appKey: process.env.TWITTER_API_KEY,
