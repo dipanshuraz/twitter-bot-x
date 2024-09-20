@@ -15,7 +15,7 @@ const client = new TwitterApi({
 const rwClient = client.readWrite;
 
 // Define your bot username to prevent self-replies
-const BOT_USERNAME = 'AGX'; // Replace with your bot's username
+const BOT_USERNAME = '0xAGX'; // Replace with your bot's username
 
 // Function to listen to mentions and reply when "@AGX msg me" is found
 const listenAndReply = async () => {
