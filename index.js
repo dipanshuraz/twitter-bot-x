@@ -1,33 +1,47 @@
-require('dotenv').config();
-const { TwitterApi } = require('twitter-api-v2');
+require("dotenv").config();
+const axios = require("axios");
+const { TwitterApi } = require("twitter-api-v2");
 
-// Set up Twitter client with environment variables
 const client = new TwitterApi({
-  appKey: process.env.API_KEY,
-  appSecret: process.env.API_SECRET,
+  appKey: process.env.CONSUMER_KEY,
+  appSecret: process.env.CONSUMER_SECRET,
   accessToken: process.env.ACCESS_TOKEN,
-  accessSecret: process.env.ACCESS_SECRET,
+  accessSecret: process.env.ACCESS_TOKEN_SECRET,
 });
 
-// Function to get user info for "codersadhu"
-const getUserInfo = async () => {
+console.log({
+  CONSUMER_KEY: process.env.CONSUMER_KEY,
+  CONSUMER_SECRET: process.env.CONSUMER_SECRET,
+  ACCESS_TOKEN: process.env.ACCESS_TOKEN,
+  ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
+});
+
+async function getRandomQuote() {
   try {
-    // Fetch user info by username
-    const user = await client.v2.userByUsername('codersadhu');
-
-    // Display user information
-    console.log('User Info:');
-    console.log(`Username: ${user.data.username}`);
-    console.log(`Name: ${user.data.name}`);
-    console.log(`ID: ${user.data.id}`);
-    console.log(`Description: ${user.data.description}`);
-    console.log(`Followers Count: ${user.data.public_metrics.followers_count}`);
-    console.log(`Following Count: ${user.data.public_metrics.following_count}`);
-    console.log(`Tweet Count: ${user.data.public_metrics.tweet_count}`);
+    // Use ZenQuotes API
+    const response = await axios.get("https://zenquotes.io/api/random");
+    if (response.status === 200) {
+      return response.data[0].q; // Return the quote
+    } else {
+      throw new Error("Failed to fetch the quote");
+    }
   } catch (error) {
-    console.error('Error fetching user info:', error);
+    console.error("Error fetching quote:", error);
+    return "Quote not available"; // Default message if fetching fails
   }
-};
+}
 
-// Call the function to fetch and display user info
-getUserInfo();
+async function postTweet(tweetText) {
+  try {
+    const { data } = await client.v2.tweet(tweetText);
+    console.log("Successfully tweeted:", data);
+  } catch (error) {
+    console.error("Error posting tweet:", error);
+  }
+}
+
+(async function () {
+  const quote = await getRandomQuote();
+  console.log("Fetched Quote:", quote); // Optional: print the fetched quote
+  postTweet(quote); // Post the fetched quote as a tweet
+})();
